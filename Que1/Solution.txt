@@ -1,0 +1,11 @@
+
+select * from brands
+
+
+;with pair as (
+select *, case when brand1 < brand2 then CONCAT(brand1, brand2, year)
+		else CONCAT(brand2, brand1, year) end as pair_id
+from brands
+), pair_rn as (
+	select *, ROW_NUMBER() OVER (partition by pair_id order by pair_id) as RN from pair
+) select * from pair_rn where rn=1 or (custom1 <> custom3 and custom2 <> custom4)
