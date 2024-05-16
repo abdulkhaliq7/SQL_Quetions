@@ -1,0 +1,20 @@
+
+
+
+;with CTE1 as (
+	select t.hut1 start_hut, t.hut2 hut2_id,m.name start_hut_name, m.altitude start_hut_altitude from mountain_huts m
+	JOIN trails t ON m.id=t.hut1
+), CTE2 AS (
+	SELECT start_hut, start_hut_altitude, start_hut_name, id end_hut, name end_hut_name, altitude end_hut_altitude
+	, case when start_hut_altitude > altitude then 1 else 0 end as altitude_flag
+	FROM CTE1
+	JOIN mountain_huts h2 ON CTE1.hut2_Id=h2.id
+), FINAL_CTE AS (
+	SELECT case when altitude_flag= 1 then start_hut else end_hut end as start_hut 
+	,case when altitude_flag= 1 then start_hut_name else end_hut_name end as start_hut_name 
+	,case when altitude_flag= 1 then end_hut else start_hut end as end_hut 
+	, case when altitude_flag= 1 then end_hut_name else start_hut_name end as end_hut_name
+	FROM CTE2
+) select f2.start_hut_name stratpt, f2.end_hut_name middlept, f1.end_hut_name endpt from FINAL_CTE f1
+JOIN FINAL_CTE f2 ON f2.end_hut=f1.start_hut
+  
